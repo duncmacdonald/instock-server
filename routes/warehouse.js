@@ -44,29 +44,31 @@ router.route("/:id")
         res.send(selectedWarehouse)
         
     })
+
+// below code works to delete and edit. 
     
-    .delete((req, res)=> {
-        const { id } = req.params
-        warehouseData = warehouseData.filter((warehouseDetail)=> warehouseDetail.id !== id)
-    })
+    // .delete((req, res)=> {
+    //     const { id } = req.params
+    //     warehouseData = warehouseData.filter((warehouseDetail)=> warehouseDetail.id !== id)
+    // })
     
-    .patch((req, res) => {
-        const { id } = req.params;
-        const { name, city, country, address  } = req.body
-        const warehouseDetail = warehouseData.find((warehouseDetail)=> warehouseDetail.id === id )
+    // .patch((req, res) => {
+    //     const { id } = req.params;
+    //     const { name, city, country, address  } = req.body
+    //     const warehouseDetail = warehouseData.find((warehouseDetail)=> warehouseDetail.id === id )
     
-        if (name) {
-            warehouseDetail.name = name
-        }
-        if (city) {
-            warehouseDetail.city = city
-        }
-        if (country) {
-            warehouseDetail.country = country
-        }
-        if (address) {
-            warehouseDetail.address = address
-        }
-    })   
+    //     if (name) {
+    //         warehouseDetail.name = name
+    //     }
+    //     if (city) {
+    //         warehouseDetail.city = city
+    //     }
+    //     if (country) {
+    //         warehouseDetail.country = country
+    //     }
+    //     if (address) {
+    //         warehouseDetail.address = address
+    //     }
+    // })   
 
 module.exports = router;
