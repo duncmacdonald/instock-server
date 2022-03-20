@@ -1,73 +1,99 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, v4 } = require("uuid");
 const email = require("email-validator");
-require('dotenv').config();
-const {PORT, BACKEND_URL} = process.env;
-
-
- 
-
+require("dotenv").config();
+const { PORT, BACKEND_URL } = process.env;
 
 // Read data file
 function readWarehouse() {
-    const warehouseData = fs.readFileSync("./data/warehouses.json");
-    const parsedData = JSON.parse(warehouseData);
-    return parsedData;
+  const warehouseData = fs.readFileSync("./data/warehouses.json");
+  const parsedData = JSON.parse(warehouseData);
+  return parsedData;
 }
 
 // Write data file
-function writeWarehouse(data){
-    fs.writeFileSync("./data/warehouses.json", JSON.stringify(data));
+function writeWarehouse(data) {
+  fs.writeFileSync("./data/warehouses.json", JSON.stringify(data));
 }
 
-
 // Get condensed list of video information
-router.route("/")
-    .get((req, res) => {   
-        console.log("warehouse posting endpoint");
-        res.status(200).send("warehouse posting endpoint");
-    })
-    .post((req, res) => {
-        console.log("warehouse posting endpoint");
-        res.status(200).send("warehouse posting endpoint");;
-    });
+//Added post call to create warehouse info
+router
+  .route("/")
+  .get((req, res) => {
+    console.log("warehouse posting endpoint");
+    res.status(200).send("warehouse posting endpoint");
+  })
+  .post((req, res) => {
+    const wareHouseInfo = readWarehouse();
+    const updatedWarehouse = Object.assign({ id: v4() }, req.body);
+    if (validWarehouse(updatedWarehouse)) {
+      wareHouseInfo.unshift(updatedWarehouse);
+      writeWarehouse(wareHouseInfo);
+      res.status(200).send(wareHouseInfo[0]);
+    } else {
+      res
+        .status(400)
+        .send(
+          `Please send the fields as per the current requirement-mandatory fields or format is missing/incorrect`
+        );
+    }
+  });
 
-router.route("/:id")
-    .put((req, res) => {
-        let warehouses = readWarehouse();
-        const warehouseIndex = warehouses.findIndex(warehouse => warehouse.id === req.params.id)
+router.route("/:id").put((req, res) => {
+  let warehouses = readWarehouse();
+  const warehouseIndex = warehouses.findIndex(
+    (warehouse) => warehouse.id === req.params.id
+  );
 
-        if (warehouseIndex === -1){
-            res.status(404).send(`Warehouse ${req.params.id} does not exist`)
-            return;
-        }
+  if (warehouseIndex === -1) {
+    res.status(404).send(`Warehouse ${req.params.id} does not exist`);
+    return;
+  }
 
-        if(validWarehouse(req.body)){
-            warehouses[warehouseIndex] = req.body;
-            warehouses[warehouseIndex].id = req.params.id;
-            
-            writeWarehouse(warehouses);
+  if (validWarehouse(req.body)) {
+    warehouses[warehouseIndex] = req.body;
+    warehouses[warehouseIndex].id = req.params.id;
 
-            res.status(200).send("specific warehouse endpoint");
-        } else {
-            res.status(400).send("All fields required. Server validates email and phone number");
-        }
+    writeWarehouse(warehouses);
 
-
-    });
+    res.status(200).send("specific warehouse endpoint");
+  } else {
+    res
+      .status(400)
+      .send("All fields required. Server validates email and phone number");
+  }
+});
 
 //Checks that all data fields exist, phonenumber length and punctuation are correct, email is valid
-function validWarehouse(warehouse){
-    if(warehouse.id && warehouse.name && warehouse.address && warehouse.city && warehouse.country && warehouse.contact.name && warehouse.contact.position && warehouse.contact.phone && warehouse.contact.email) {
-        
-        //proper phone number regex could go here if required
-        if(!(warehouse.contact.phone.length === 17 && warehouse.contact.phone.substring(0,4) === "+1 (" && warehouse.contact.phone.substring(7,9) === ") " && warehouse.contact.phone.charAt(12) === "-")) return false;
+function validWarehouse(warehouse) {
+  if (
+    warehouse.id &&
+    warehouse.name &&
+    warehouse.address &&
+    warehouse.city &&
+    warehouse.country &&
+    warehouse.contact.name &&
+    warehouse.contact.position &&
+    warehouse.contact.phone &&
+    warehouse.contact.email
+  ) {
+    //proper phone number regex could go here if required
+    if (
+      !(
+        warehouse.contact.phone.length === 17 &&
+        warehouse.contact.phone.substring(0, 4) === "+1 (" &&
+        warehouse.contact.phone.substring(7, 9) === ") " &&
+        warehouse.contact.phone.charAt(12) === "-"
+      )
+    )
+      return false;
 
-        if(email.validate(warehouse.contact.email)) return true;
-    } 
-    return false;
+    if (email.validate(warehouse.contact.email)) return true;
+  }
+  return false;
 }
 
 module.exports = router;
