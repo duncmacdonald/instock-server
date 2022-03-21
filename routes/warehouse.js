@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
-const { v4: uuidv4, v4 } = require("uuid");
+const { v4 } = require("uuid");
 const email = require("email-validator");
 require("dotenv").config();
 const { PORT, BACKEND_URL } = process.env;
