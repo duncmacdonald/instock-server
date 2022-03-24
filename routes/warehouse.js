@@ -22,10 +22,11 @@ function writeWarehouse(data) {
 //Added post call to create warehouse info
 router
   .route("/")
-  .get((req, res) => {
-    console.log("warehouse posting endpoint");
-    res.status(200).send("warehouse posting endpoint");
-  })
+  let warehouses = readWarehouse()
+    .get((req, res) => {   
+        console.log("warehouse posting endpoint");
+        res.status(200).send(warehouses);
+    })
   .post((req, res) => {
     const wareHouseInfo = readWarehouse();
     const updatedWarehouse = Object.assign({ id: v4() }, req.body);
@@ -42,11 +43,11 @@ router
     }
   });
 
-router.route("/:id").put((req, res) => {
-  let warehouses = readWarehouse();
-  const warehouseIndex = warehouses.findIndex(
-    (warehouse) => warehouse.id === req.params.id
-  );
+  router.route("/:id").put((req, res) => {
+    let warehouses = readWarehouse();
+    const { id } = req.params
+    const warehouseIndex = warehouses.findIndex(
+      (warehouse) => warehouse.id === id);
 
   if (warehouseIndex === -1) {
     res.status(404).send(`Warehouse ${req.params.id} does not exist`);
