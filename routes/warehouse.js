@@ -43,11 +43,11 @@ router
     }
   });
 
-  router.route("/:id").put((req, res) => {
-    let warehouses = readWarehouse();
-    const { id } = req.params
-    const warehouseIndex = warehouses.findIndex(
-      (warehouse) => warehouse.id === id);
+router.route("/:id").put((req, res) => {
+  let warehouses = readWarehouse();
+  const warehouseIndex = warehouses.findIndex(
+    (warehouse) => warehouse.id === req.params.id
+  );
 
   if (warehouseIndex === -1) {
     res.status(404).send(`Warehouse ${req.params.id} does not exist`);
