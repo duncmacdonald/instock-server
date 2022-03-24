@@ -22,8 +22,8 @@ function writeWarehouse(data) {
 //Added post call to create warehouse info
 router
   .route("/")
-  let warehouses = readWarehouse()
     .get((req, res) => {   
+        let warehouses = readWarehouse()
         console.log("warehouse posting endpoint");
         res.status(200).send(warehouses);
     })
@@ -42,6 +42,15 @@ router
         );
     }
   });
+
+  router.route("/:id")
+    .get((req,res)=>{
+      let warehouseData = readWarehouse()
+        const { id } = req.params;
+        const selectedWarehouse = warehouseData.find((warehouseDetail) => warehouseDetail.id === id);
+        res.send(selectedWarehouse)
+        
+    })
 
 router.route("/:id").put((req, res) => {
   let warehouses = readWarehouse();
