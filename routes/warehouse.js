@@ -22,11 +22,11 @@ function writeWarehouse(data) {
 //Added post call to create warehouse info
 router
   .route("/")
-    .get((req, res) => {   
-        let warehouses = readWarehouse()
-        console.log("warehouse posting endpoint");
-        res.status(200).send(warehouses);
-    })
+  .get((req, res) => {
+    let warehouses = readWarehouse();
+    console.log("warehouse posting endpoint");
+    res.status(200).send(warehouses);
+  })
   .post((req, res) => {
     const wareHouseInfo = readWarehouse();
     const updatedWarehouse = Object.assign({ id: v4() }, req.body);
@@ -43,14 +43,14 @@ router
     }
   });
 
-  router.route("/:id")
-    .get((req,res)=>{
-      let warehouseData = readWarehouse()
-        const { id } = req.params;
-        const selectedWarehouse = warehouseData.find((warehouseDetail) => warehouseDetail.id === id);
-        res.send(selectedWarehouse)
-        
-    })
+router.route("/:id").get((req, res) => {
+  let warehouseData = readWarehouse();
+  const { id } = req.params;
+  const selectedWarehouse = warehouseData.find(
+    (warehouseDetail) => warehouseDetail.id === id
+  );
+  res.send(selectedWarehouse);
+});
 
 router.route("/:id").put((req, res) => {
   let warehouses = readWarehouse();
@@ -107,24 +107,27 @@ function validWarehouse(warehouse) {
 }
 
 module.exports = router;
-// 1. Take the warehouse array and find() the warehouse which has the id that is equal 
-//to the params. 
+// 1. Take the warehouse array and find() the warehouse which has the id that is equal
+//to the params.
 //2. If the warehouse doesn't exist then send a 404 error, if it does then
-// write a function that filters through itself, looks for its id/content and gets rid of it with a 200 message.   
-router.route("/:id"). delete( (req, res)=> {
+// write a function that filters through itself, looks for its id/content and gets rid of it with a 200 message.
+router.route("/:id").delete((req, res) => {
   const warehouseData = readWarehouse();
-  const {id} = req.params
-const deleted = warehouseData.find(warehouseData=> warehouseData.id === id )
-//If the id being requested exists, then we want to filter the data and return everything except for that id. 
-if (deleted) {
-const newData = warehouseData.filter(warehouseData=>warehouseData.id !== id) 
-writeWarehouse (newData)
-res.status(200).json({message: 'Success, your warehouse was deleted!'})
-} else {
-  res.status(404).json({message: 'This ID does not exist *_*.'})
-} 
+  const { id } = req.params;
+  const deleted = warehouseData.find(
+    (warehouseData) => warehouseData.id === id
+  );
+  //If the id being requested exists, then we want to filter the data and return everything except for that id.
+  if (deleted) {
+    const newData = warehouseData.filter(
+      (warehouseData) => warehouseData.id !== id
+    );
+    writeWarehouse(newData);
+    res.status(200).json({ message: "Success, your warehouse was deleted!" });
+  } else {
+    res.status(404).json({ message: "This ID does not exist *_*." });
+  }
 });
-
 
 // {
 //     "id": "2922c286-16cd-4d43-ab98-c79f698aeab0",
