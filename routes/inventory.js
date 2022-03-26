@@ -71,14 +71,11 @@ function inventoryListEditor(inventoryItem) {
 }
 
 router.route("/:id").put((req, res) => {
-  console.log(req.body);
-
   const { body } = req;
-
   ValidInventoryItem(body)
     ? (res.status(200).send(inventoryListEditor(body)),
       writeInventory(inventoryListEditor(body)))
-    : res.status(400).send("valid info");
+    : res.status(400).send("All fields required.");
 });
 
 module.exports = router;
