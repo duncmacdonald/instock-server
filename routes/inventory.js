@@ -8,8 +8,8 @@ const { PORT, BACKEND_URL } = process.env;
 
 // // Read data file
 function readInventory() {
-  const videoData = fs.readFileSync("./data/inventories.json");
-  const parsedData = JSON.parse(videoData);
+  const inventoryData = fs.readFileSync("./data/inventories.json");
+  const parsedData = JSON.parse(inventoryData);
   return parsedData;
 }
 
@@ -63,8 +63,8 @@ function ValidInventoryItem(item) {
 function inventoryListEditor(inventoryItem) {
   const inventoryList = readInventory();
 
-  const updatedInventoryList = inventoryList.map((inventoryID) => {
-    return inventoryItem.id === inventoryID.id ? inventoryItem : inventoryID;
+  const updatedInventoryList = inventoryList.map((inventory) => {
+    return inventoryItem.id === inventory.id ? inventoryItem : inventory;
   });
 
   return updatedInventoryList;
