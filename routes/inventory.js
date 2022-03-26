@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
+const { v4 } = require("uuid");
 
 require("dotenv").config();
 const { PORT, BACKEND_URL } = process.env;
@@ -41,6 +41,44 @@ router.route("/:id").delete((req, res) => {
     ? (res.status(200).send(finalInventorylist),
       writeInventory(finalInventorylist))
     : res.status(404).send("Incorrect Inventory ID");
+});
+
+function ValidInventoryItem(item) {
+  if (
+    item.id &&
+    item.warehouseID &&
+    item.warehouseName &&
+    item.itemName &&
+    item.description &&
+    item.category &&
+    item.status &&
+    item.quantity
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function inventoryListEditor(inventoryItem) {
+  const inventoryList = readInventory();
+
+  const updatedInventoryList = inventoryList.map((inventoryID) => {
+    return inventoryItem.id === inventoryID.id ? inventoryItem : inventoryID;
+  });
+
+  return updatedInventoryList;
+}
+
+router.route("/:id").put((req, res) => {
+  console.log(req.body);
+
+  const { body } = req;
+
+  ValidInventoryItem(body)
+    ? (res.status(200).send(inventoryListEditor(body)),
+      writeInventory(inventoryListEditor(body)))
+    : res.status(400).send("valid info");
 });
 
 module.exports = router;
