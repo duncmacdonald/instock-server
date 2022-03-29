@@ -41,6 +41,18 @@ router.route("/:id")
       
 })
 
+console.log(readInventory()[0].warehouseID)
+
+router.route("/:warehouseID")
+.get((req,res)=>{
+
+      let inventoryWarehouseId = readInventory();
+      const  warehouseId = req.params.warehouseID;
+      const selectedWarehouseID = inventoryWarehouseId.filter((inventoryDetail) =>  inventoryDetail.warehouseID === warehouseId);
+      res.send(selectedWarehouseID)
+      
+})
+
 router.route("/:id").delete((req, res) => {
   const inventory = readInventory();
   const { id } = req.params;
