@@ -19,16 +19,27 @@ function writeInventory(data) {
 }
 
 // // Get condensed list of video information
-router
-  .route("/")
-  .get((req, res) => {
-    console.log("inventory posting endpoint");
-    res.status(200).send("inventory posting endpoint");
-  })
+router.route("/")
+    .get((req, res) => {
+        let inventoryData = readInventory();
+        console.log("warehouse posting endpoint");
+        res.status(200).send(inventoryData);
+    })
   .post((req, res) => {
     console.log("inventory posting endpoint");
     res.status(200).send("inventory posting endpoint");
   });
+
+router.route("/:id")
+.get((req,res)=>{
+      let inventoryData = readInventory();
+      const { id } = req.params;
+      const selectedInventory = inventoryData.find((inventoryDetail) => inventoryDetail.id === id);
+  
+  
+      res.send(selectedInventory)
+      
+})
 
 router.route("/:id").delete((req, res) => {
   const inventory = readInventory();
