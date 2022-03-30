@@ -45,7 +45,7 @@ router.route("/:id")
 
 // // Get a list of all the inventories by given warehouse
 
-router.route("/warehouseInventory/:warehouseID")
+router.route("/warehousedetail/:warehouseID")
 .get((req,res)=>{
       let inventoryWarehouseId = readInventory();
       const { warehouseID } = req.params;
