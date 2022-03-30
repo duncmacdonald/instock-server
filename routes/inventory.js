@@ -18,7 +18,7 @@ function writeInventory(data) {
   fs.writeFileSync("./data/inventories.json", JSON.stringify(data));
 }
 
-// // Get condensed list of video information
+// // Get list of all the inventories
 router.route("/")
     .get((req, res) => {
         let inventoryData = readInventory();
@@ -30,6 +30,8 @@ router.route("/")
     res.status(200).send("inventory posting endpoint");
   });
 
+
+// // Get a single inventory detail
 router.route("/:id")
 .get((req,res)=>{
       let inventoryData = readInventory();
@@ -41,8 +43,9 @@ router.route("/:id")
       
 })
 
+// // Get a list of all the inventories by given warehouse
 
-router.route("/:id/:warehouseID")
+router.route("/warehouseInventory/:warehouseID")
 .get((req,res)=>{
       let inventoryWarehouseId = readInventory();
       const { warehouseID } = req.params;
