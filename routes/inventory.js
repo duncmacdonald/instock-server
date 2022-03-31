@@ -22,7 +22,7 @@ function writeInventory(data) {
 router.route("/")
     .get((req, res) => {
         let inventoryData = readInventory();
-        console.log("warehouse posting endpoint");
+        console.log("inventory posting endpoint");
         res.status(200).send(inventoryData);
     })
   .post((req, res) => {
@@ -104,6 +104,22 @@ router.route("/:id").put((req, res) => {
     ? (res.status(200).send(inventoryListEditor(body)),
       writeInventory(inventoryListEditor(body)))
     : res.status(400).send("All fields required.");
+});
+//Post a New Inventory
+router.route('/addnewinventory').get((req, res) => {
+ const inventoryInfo = readInventory();
+ const updatedInventory = Object.assign({ id: v4() }, req.body);
+ if (validInventory(updatedInventory)) {
+  inventory.unshift(updatedInventory);
+  writeInventory(inventoryInfo);
+  res.status(200).send(inventoryInfo[0]);
+} else {
+  res
+    .status(400)
+    .send(
+      `Please send the fields as per the current requirement-mandatory fields or format is missing/incorrect`
+    );
+}
 });
 
 module.exports = router;
