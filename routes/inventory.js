@@ -18,31 +18,6 @@ function writeInventory(data) {
   fs.writeFileSync("./data/inventories.json", JSON.stringify(data));
 }
 
-// // Get condensed list of video information
-router
-  .route("/")
-  .get((req, res) => {
-    console.log("inventory posting endpoint");
-    res.status(200).send("inventory posting endpoint");
-  })
-  .post((req, res) => {
-    console.log("inventory posting endpoint");
-    res.status(200).send("inventory posting endpoint");
-  });
-
-router.route("/:id").delete((req, res) => {
-  const inventory = readInventory();
-  const { id } = req.params;
-  const finalInventorylist = inventory.filter((inventoryID) => {
-    return inventoryID.id !== id;
-  });
-
-  finalInventorylist.length !== inventory.length
-    ? (res.status(200).send(finalInventorylist),
-      writeInventory(finalInventorylist))
-    : res.status(404).send("Incorrect Inventory ID");
-});
-
 function ValidInventoryItem(item) {
   if (
     item.id &&
@@ -59,6 +34,70 @@ function ValidInventoryItem(item) {
     return false;
   }
 }
+
+// // Get list of all the inventories
+router.route("/")
+    .get((req, res) => {
+        let inventoryData = readInventory();
+        console.log("inventory posting endpoint");
+        res.status(200).send(inventoryData);
+    })
+    .post((req, res) => {
+      const inventoryInfo = readInventory();
+      const updatedInventory = Object.assign({ id: v4() }, req.body);
+    //   if (ValidInventoryItem(updatedInventory)) {
+      inventoryInfo.unshift(updatedInventory);
+      writeInventory(inventoryInfo);
+      res.status(200).send(inventoryInfo[0]);
+    // } else {
+      res
+        .status(400)
+        .send(
+          `Please send the fields as per the current requirement-mandatory fields or format is missing/incorrect`
+        );
+    // }
+    });
+
+// // Get a single inventory detail
+router.route("/:id")
+.get((req,res)=>{
+      let inventoryData = readInventory();
+      const { id } = req.params;
+      const selectedInventory = inventoryData.find((inventoryDetail) => inventoryDetail.id === id);
+  
+  
+      res.send(selectedInventory)
+      
+})
+
+// // Get a list of all the inventories by given warehouse
+
+router.route("/warehousedetail/:warehouseID")
+.get((req,res)=>{
+      let inventoryWarehouseId = readInventory();
+      const { warehouseID } = req.params;
+      const selectedWarehouseid = inventoryWarehouseId.filter((inventoryDetail) => {
+        
+        return inventoryDetail.warehouseID === warehouseID
+        
+      });
+      
+      res.send(selectedWarehouseid)
+})
+
+router.route("/:id").delete((req, res) => {
+  const inventory = readInventory();
+  const { id } = req.params;
+  const finalInventorylist = inventory.filter((inventoryID) => {
+    return inventoryID.id !== id;
+  });
+
+  finalInventorylist.length !== inventory.length
+    ? (res.status(200).send(finalInventorylist),
+      writeInventory(finalInventorylist))
+    : res.status(404).send("Incorrect Inventory ID");
+});
+
 
 function inventoryListEditor(inventoryItem) {
   const inventoryList = readInventory();
@@ -77,5 +116,6 @@ router.route("/:id").put((req, res) => {
       writeInventory(inventoryListEditor(body)))
     : res.status(400).send("All fields required.");
 });
+
 
 module.exports = router;
