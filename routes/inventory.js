@@ -18,6 +18,23 @@ function writeInventory(data) {
   fs.writeFileSync("./data/inventories.json", JSON.stringify(data));
 }
 
+function ValidInventoryItem(item) {
+  if (
+    item.id &&
+    item.warehouseID &&
+    item.warehouseName &&
+    item.itemName &&
+    item.description &&
+    item.category &&
+    item.status &&
+    item.quantity
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 // // Get list of all the inventories
 router.route("/")
     .get((req, res) => {
@@ -25,11 +42,21 @@ router.route("/")
         console.log("inventory posting endpoint");
         res.status(200).send(inventoryData);
     })
-  .post((req, res) => {
-    console.log("inventory posting endpoint");
-    res.status(200).send("inventory posting endpoint");
-  });
-
+    .post((req, res) => {
+      const inventoryInfo = readInventory();
+      const updatedInventory = Object.assign({ id: v4() }, req.body);
+    //   if (ValidInventoryItem(updatedInventory)) {
+      inventoryInfo.unshift(updatedInventory);
+      writeInventory(inventoryInfo);
+      res.status(200).send(inventoryInfo[0]);
+    // } else {
+      res
+        .status(400)
+        .send(
+          `Please send the fields as per the current requirement-mandatory fields or format is missing/incorrect`
+        );
+    // }
+    });
 
 // // Get a single inventory detail
 router.route("/:id")
@@ -71,22 +98,6 @@ router.route("/:id").delete((req, res) => {
     : res.status(404).send("Incorrect Inventory ID");
 });
 
-function ValidInventoryItem(item) {
-  if (
-    item.id &&
-    item.warehouseID &&
-    item.warehouseName &&
-    item.itemName &&
-    item.description &&
-    item.category &&
-    item.status &&
-    item.quantity
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-}
 
 function inventoryListEditor(inventoryItem) {
   const inventoryList = readInventory();
@@ -105,21 +116,6 @@ router.route("/:id").put((req, res) => {
       writeInventory(inventoryListEditor(body)))
     : res.status(400).send("All fields required.");
 });
-//Post a New Inventory
-router.route('/addnewinventory').get((req, res) => {
- const inventoryInfo = readInventory();
- const updatedInventory = Object.assign({ id: v4() }, req.body);
- if (validInventory(updatedInventory)) {
-  inventory.unshift(updatedInventory);
-  writeInventory(inventoryInfo);
-  res.status(200).send(inventoryInfo[0]);
-} else {
-  res
-    .status(400)
-    .send(
-      `Please send the fields as per the current requirement-mandatory fields or format is missing/incorrect`
-    );
-}
-});
+
 
 module.exports = router;
